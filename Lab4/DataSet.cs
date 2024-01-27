@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,13 @@ namespace Lab4
     {
         public List<List<string>> data;
         public int targetColumn = -1;
+        public List<bool> columnType = new List<bool>();
+        public List<int> ignoreList = new List<int>();
+
+        public void ignore(int id)
+        {
+            ignoreList.Add(id);
+        }
 
         public DataSet()
         {
@@ -20,6 +28,26 @@ namespace Lab4
         public void AddRow(List<string> row)
         {
             data.Add(row);
+        }
+
+        public void ClassifyColumns()
+        {
+            for(int i = 0; i<GetColumnCount(); i++)
+            {
+                bool st = false;
+                double o = 0;
+
+                foreach(List<string> row in data)
+                {
+                    if (!double.TryParse(row[i], NumberStyles.Number, CultureInfo.InvariantCulture, out o))
+                    {
+                        st = true;
+                        break;
+                    }
+                }
+
+                columnType.Add(st);
+            }
         }
 
         public Dictionary<string,int> valueCounter()
@@ -85,6 +113,27 @@ namespace Lab4
                     }
                 }
             }
+        }
+        public double variance()
+        {
+            List<double> values = new List<double>();
+            double mean = 0;
+            double v = 0;
+
+            foreach (List<string> row in data)
+            {
+                double val;
+                double.TryParse(row[targetColumn], System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out val);
+                values.Add(val);
+                mean += val;
+            }
+            mean /= values.Count;
+
+            foreach (double d in values)
+            {
+                v += (d - mean) * (d - mean);
+            }
+            return v / values.Count;
         }
     }
 }

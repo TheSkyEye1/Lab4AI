@@ -97,14 +97,17 @@ namespace Lab4
             using (var reader = new StreamReader(dlg.FileName))
             {
                 headers = reader.ReadLine().Split(',').ToList<string>();
-                dataSet.targetColumn = headers.Count-1;
+                dataSet.targetColumn = 13;
+                //dataSet.ignore(8);
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',').ToList<string>();
-
-                    dataSet.AddRow(values);
+                    if(!values.Contains("")) dataSet.AddRow(values);
                 }
+
+                dataSet.ClassifyColumns();
+
                 foreach (List<string> value in dataSet.data)
                 {
                     string st = "";

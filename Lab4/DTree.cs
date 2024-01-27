@@ -10,7 +10,7 @@ namespace Lab4
     public class DTree
     {
         public Node root;
-
+        public List<Node> nodes = new List<Node>();
         public DSets dataSplit(DataSet dataSet, int col, string value)
         {
             DSets result = new DSets();
@@ -39,12 +39,28 @@ namespace Lab4
             }
 
             result.set1.targetColumn = result.set2.targetColumn = dataSet.targetColumn;
+            result.set1.ignoreList = result.set2.ignoreList = dataSet.ignoreList;
 
             return result;
         }
 
+        public void fuuny_function()
+        {
+            foreach(Node node in nodes)
+            {
+                if(node.fbranch != null & node.tbranch != null)
+                {
+                    if(node.fbranch.results != null & node.tbranch.results != null)
+                    {
+
+                    }
+                }
+            }
+        }
+
         public void treeBuilder(DataSet dataSet)
         {
+            nodes = new List<Node>();
             Stack<Node> stack = new Stack<Node>();
 
             root = new Node();
@@ -67,6 +83,7 @@ namespace Lab4
                 for (int i = 0; i < count; i++)
                 {
                     if (i == current.results.targetColumn) continue;
+                    if (current.results.ignoreList.Contains(i)) continue;
                     List<string> uniqueValues = current.results.GetUniqueValues(i);
 
                     foreach (string value in uniqueValues)
@@ -96,16 +113,91 @@ namespace Lab4
 
                     current.tbranch = new Node();
                     current.tbranch.results = best_sets.set1;
+                    
 
                     current.fbranch = new Node();
                     current.fbranch.results = best_sets.set2;
 
                     stack.Push(current.tbranch);
                     stack.Push(current.fbranch);
+
+                    nodes.Add(current);
                 }
             }
             while(stack.Count > 0);
+
         }
+
+        public void regressionTreeBuilder(DataSet dataSet)
+        {
+            nodes = new List<Node>();
+            Stack<Node> stack = new Stack<Node>();
+
+            root = new Node();
+            root.results = dataSet;
+            stack.Push(root);
+
+            do
+            {
+                Node current = stack.Pop();
+
+                double best_gain = 0;
+                string best_value = "";
+                int best_col = -1;
+                DSets best_sets = null;
+
+                double currentH = current.results.variance();
+
+                int count = current.results.GetColumnCount();
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (i == current.results.targetColumn) continue;
+                    if (current.results.ignoreList.Contains(i)) continue;
+                    List<string> uniqueValues = current.results.GetUniqueValues(i);
+
+                    foreach (string value in uniqueValues)
+                    {
+                        DSets sets = new DSets();
+                        sets = dataSplit(current.results, i, value);
+                        double p = sets.set1.GetLength() / (double)current.results.GetLength();
+                        double H1 = sets.set1.enthropy();
+                        double H2 = sets.set2.enthropy();
+                        double gain = (currentH - (p * H1)) - ((1 - p) * H2);
+
+                        if (gain > best_gain && sets.set1.GetLength() > 0 && sets.set2.GetLength() > 0)
+                        {
+                            best_gain = gain;
+                            best_sets = sets;
+                            best_col = i;
+                            best_value = value;
+                        }
+                    }
+                }
+
+                if (best_gain > 0)
+                {
+                    current.col = best_col;
+                    current.value = best_value;
+                    current.results = null;
+
+                    current.tbranch = new Node();
+                    current.tbranch.results = best_sets.set1;
+
+
+                    current.fbranch = new Node();
+                    current.fbranch.results = best_sets.set2;
+
+                    stack.Push(current.tbranch);
+                    stack.Push(current.fbranch);
+
+                    nodes.Add(current);
+                }
+            }
+            while (stack.Count > 0);
+
+        }
+
 
         public string getResult(List<string> request)
         {
@@ -132,6 +224,8 @@ namespace Lab4
             return current.results.data[0][current.results.targetColumn];
 
         }
+
+        
 
         
 

@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab4"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="520" Width="1147">
     <Grid>
         <TreeView x:Name="TV" HorizontalAlignment="Left" Height="283" Margin="40,90,0,0" VerticalAlignment="Top" Width="308"/>
         <Button x:Name="LoadB" Content="Load Tree" HorizontalAlignment="Left" Height="53" Margin="40,20,0,0" VerticalAlignment="Top" Width="139" Click="LoadB_Click"/>
         <Button x:Name="DrawB" Content="Draw Tree" HorizontalAlignment="Left" Height="53" Margin="210,20,0,0" VerticalAlignment="Top" Width="139" Click="DrawB_Click"/>
-        <ListBox x:Name="LB" HorizontalAlignment="Left" Height="295" Margin="492,80,0,0" VerticalAlignment="Top" Width="274" d:ItemsSource="{d:SampleData ItemCount=5}"/>
+        <ListBox x:Name="LB" HorizontalAlignment="Left" Height="352" Margin="364,20,0,0" VerticalAlignment="Top" Width="759" d:ItemsSource="{d:SampleData ItemCount=5}"/>
 
     </Grid>
 </Window>
