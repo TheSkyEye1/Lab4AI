@@ -46,16 +46,45 @@ namespace Lab4
 
         public void fuuny_function()
         {
-            foreach(Node node in nodes)
-            {
-                if(node.fbranch != null & node.tbranch != null)
-                {
-                    if(node.fbranch.results != null & node.tbranch.results != null)
-                    {
+            Stack<Node> stack = new Stack<Node>();
+            stack.Push(root);
 
+            do
+            {
+                Node current = stack.Pop();
+
+                if (current.results == null)
+                {
+                    if(current.fbranch.results != null && current.tbranch.results != null)
+                    {
+                        List<List<string>> combine = current.tbranch.results.data.Concat(current.fbranch.results.data)
+                                       .Distinct(new ListEqualityComparer())
+                                       .ToList();
+
+                        DataSet D = new DataSet();
+                        D.data = combine;
+                        D.targetColumn = current.tbranch.results.targetColumn;
+
+                        double delta = (D.enthropy()) - ((current.tbranch.results.enthropy() + current.fbranch.results.enthropy()) / 2);
+
+                        if(delta < 1)
+                        {
+                            current.value = null;
+                            current.col = current.tbranch.results.targetColumn;
+                            current.results = D;
+                            current.tbranch = null;
+                            current.fbranch = null;
+                        }
+
+                    }
+                    else
+                    {
+                        stack.Push(current.tbranch);
+                        stack.Push(current.fbranch);
                     }
                 }
             }
+            while (stack.Count > 0);
         }
 
         public void treeBuilder(DataSet dataSet)
@@ -125,7 +154,6 @@ namespace Lab4
                 }
             }
             while(stack.Count > 0);
-
         }
 
         public void regressionTreeBuilder(DataSet dataSet)
@@ -190,8 +218,6 @@ namespace Lab4
 
                     stack.Push(current.tbranch);
                     stack.Push(current.fbranch);
-
-                    nodes.Add(current);
                 }
             }
             while (stack.Count > 0);
@@ -224,10 +250,25 @@ namespace Lab4
             return current.results.data[0][current.results.targetColumn];
 
         }
+    }
+    class ListEqualityComparer : IEqualityComparer<List<string>>
+    {
+        public bool Equals(List<string> x, List<string> y)
+        {
+            if (x.Count != y.Count)
+                return false;
 
-        
+            return x.SequenceEqual(y);
+        }
 
-        
-
+        public int GetHashCode(List<string> obj)
+        {
+            int hash = 17;
+            foreach (var item in obj)
+            {
+                hash = hash * 31 + item.GetHashCode();
+            }
+            return hash;
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace Lab4
             using (var reader = new StreamReader(dlg.FileName))
             {
                 headers = reader.ReadLine().Split(',').ToList<string>();
-                dataSet.targetColumn = 13;
+                dataSet.targetColumn = 5;
                 //dataSet.ignore(8);
                 while (!reader.EndOfStream)
                 {
@@ -116,6 +116,53 @@ namespace Lab4
                 }
             }
 
+        }
+
+        private void DrawTF_Click(object sender, RoutedEventArgs e)
+        {
+            tree = new DTree();
+            tree.treeBuilder(dataSet);
+            tree.fuuny_function();
+            Stack<Node> stack = new Stack<Node>();
+            Stack<TreeViewItem> stackTV = new Stack<TreeViewItem>();
+            stack.Push(tree.root);
+            TreeViewItem tvi = new TreeViewItem();
+            TVF.Items.Add(tvi);
+            stackTV.Push(tvi);
+
+            do
+            {
+                Node current = stack.Pop();
+                TreeViewItem ctvi = stackTV.Pop();
+
+                if (current.results == null)
+                {
+                    double o = 0;
+
+                    if (double.TryParse(current.value, NumberStyles.Number, CultureInfo.InvariantCulture, out o))
+                        ctvi.Header = headers[current.col] + " >= " + current.value;
+                    else
+                        ctvi.Header = headers[current.col] + " = " + current.value;
+
+                    TreeViewItem tp = new TreeViewItem();
+                    TreeViewItem fp = new TreeViewItem();
+
+                    ctvi.Items.Add(tp);
+                    ctvi.Items.Add(fp);
+                    stackTV.Push(tp);
+                    stackTV.Push(fp);
+
+                    stack.Push(current.tbranch);
+                    stack.Push(current.fbranch);
+
+                }
+                else
+                {
+                    ctvi.Header = current.results.data[0][current.results.targetColumn];
+                }
+
+            }
+            while (stack.Count > 0);
         }
     }
 }

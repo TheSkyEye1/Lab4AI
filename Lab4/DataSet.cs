@@ -136,4 +136,6 @@ namespace Lab4
             return v / values.Count;
         }
     }
+
+   
 }
