@@ -91,18 +91,18 @@ namespace Lab4
 
         public void loadDataSet()
         {
-
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.ShowDialog();
             using (var reader = new StreamReader(dlg.FileName))
             {
-                headers = reader.ReadLine().Split(',').ToList<string>();
-                dataSet.targetColumn = 5;
-                //dataSet.ignore(8);
+                headers = reader.ReadLine().Split('\t').ToList<string>();
+                dataSet.targetColumn = 9;
+                List<int> ignore = new List<int>{0, 2, 3, 7};
+                dataSet.ignoreList = ignore;
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    var values = line.Split(',').ToList<string>();
+                    var values = line.Split('\t').ToList<string>();
                     if(!values.Contains("")) dataSet.AddRow(values);
                 }
 
@@ -128,6 +128,53 @@ namespace Lab4
             stack.Push(tree.root);
             TreeViewItem tvi = new TreeViewItem();
             TVF.Items.Add(tvi);
+            stackTV.Push(tvi);
+
+            do
+            {
+                Node current = stack.Pop();
+                TreeViewItem ctvi = stackTV.Pop();
+
+                if (current.results == null)
+                {
+                    double o = 0;
+
+                    if (double.TryParse(current.value, NumberStyles.Number, CultureInfo.InvariantCulture, out o))
+                        ctvi.Header = headers[current.col] + " >= " + current.value;
+                    else
+                        ctvi.Header = headers[current.col] + " = " + current.value;
+
+                    TreeViewItem tp = new TreeViewItem();
+                    TreeViewItem fp = new TreeViewItem();
+
+                    ctvi.Items.Add(tp);
+                    ctvi.Items.Add(fp);
+                    stackTV.Push(tp);
+                    stackTV.Push(fp);
+
+                    stack.Push(current.tbranch);
+                    stack.Push(current.fbranch);
+
+                }
+                else
+                {
+                    ctvi.Header = current.results.data[0][current.results.targetColumn];
+                }
+
+            }
+            while (stack.Count > 0);
+        }
+
+        private void DrawB_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            tree = new DTree();
+            tree.regressionTreeBuilder(dataSet);
+
+            Stack<Node> stack = new Stack<Node>();
+            Stack<TreeViewItem> stackTV = new Stack<TreeViewItem>();
+            stack.Push(tree.root);
+            TreeViewItem tvi = new TreeViewItem();
+            TV.Items.Add(tvi);
             stackTV.Push(tvi);
 
             do

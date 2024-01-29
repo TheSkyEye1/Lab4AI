@@ -189,8 +189,8 @@ namespace Lab4
                         DSets sets = new DSets();
                         sets = dataSplit(current.results, i, value);
                         double p = sets.set1.GetLength() / (double)current.results.GetLength();
-                        double H1 = sets.set1.enthropy();
-                        double H2 = sets.set2.enthropy();
+                        double H1 = sets.set1.variance();
+                        double H2 = sets.set2.variance();
                         double gain = (currentH - (p * H1)) - ((1 - p) * H2);
 
                         if (gain > best_gain && sets.set1.GetLength() > 0 && sets.set2.GetLength() > 0)
@@ -223,7 +223,6 @@ namespace Lab4
             while (stack.Count > 0);
 
         }
-
 
         public string getResult(List<string> request)
         {

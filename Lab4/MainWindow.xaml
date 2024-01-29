@@ -13,6 +13,7 @@
         <ListBox x:Name="LB" HorizontalAlignment="Left" Height="352" Margin="846,20,0,0" VerticalAlignment="Top" Width="277" d:ItemsSource="{d:SampleData ItemCount=5}"/>
         <TreeView x:Name="TVF" HorizontalAlignment="Left" Height="283" Margin="365,91,0,0" VerticalAlignment="Top" Width="308"/>
         <Button x:Name="DrawTF" Content="Draw Funny Tree" HorizontalAlignment="Left" Height="53" Margin="365,21,0,0" VerticalAlignment="Top" Width="139" Click="DrawTF_Click"/>
+        <Button x:Name="DrawB_Copy" Content="Draw Reg Tree" HorizontalAlignment="Left" Height="53" Margin="528,19,0,0" VerticalAlignment="Top" Width="139" Click="DrawB_Copy_Click"/>
 
     </Grid>
 </Window>
